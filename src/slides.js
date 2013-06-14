@@ -156,6 +156,8 @@ Presentation.prototype={
                 }
 
                 addClass(this.container, "presentation-running");
+                this.container.styles.position="fixed";
+                this.container.styles.zIndex="5000";
                 this._scaleDocument();
                 this.events.add(window, "resize", this._scaleDocument, this);
                 this.events.add(document, "keydown", this._onKey, this);
@@ -170,6 +172,8 @@ Presentation.prototype={
                 this.events.removeAll();
                 removeClass(this.container, "presentation-running");
                 this._applyScale(1);
+                this.container.styles.position="";
+                this.container.styles.zIndex="";
         },
 
         previous: function() {
@@ -194,16 +198,16 @@ Presentation.prototype={
 
         _applyScale: function(ratio) {
                 var style = (ratio!=1) ? ("scale("+ratio+")") : "";
-                document.body.style.WebkitTransform=style;
-                document.body.style.MozTransform=style;
-                document.body.style.msTransform=style;
-                document.body.style.OTransform=style;
-                document.body.style.transform=style;
+                this.container.style.WebkitTransform=style;
+                this.container.style.MozTransform=style;
+                this.container.style.msTransform=style;
+                this.container.style.OTransform=style;
+                this.container.style.transform=style;
         },
 
         _scaleDocument: function() {
-                var ratio = 1/Math.max(document.body.clientWidth/window.innerWidth,
-                                       document.body.clientHeight/window.innerHeight);
+                var ratio = 1/Math.max(this.container.clientWidth/window.innerWidth,
+                                       this.container.clientHeight/window.innerHeight);
                 console.debug("Scaling to ratio", ratio);
                 this._applyScale(ratio);
         },
