@@ -156,8 +156,8 @@ Presentation.prototype={
                 }
 
                 addClass(this.container, "presentation-running");
-                this.container.styles.position="fixed";
-                this.container.styles.zIndex="5000";
+                this.container.style.position="fixed";
+                this.container.style.zIndex="5000";
                 this._scaleDocument();
                 this.events.add(window, "resize", this._scaleDocument, this);
                 this.events.add(document, "keydown", this._onKey, this);
@@ -172,8 +172,8 @@ Presentation.prototype={
                 this.events.removeAll();
                 removeClass(this.container, "presentation-running");
                 this._applyScale(1);
-                this.container.styles.position="";
-                this.container.styles.zIndex="";
+                this.container.style.position="";
+                this.container.style.zIndex="";
         },
 
         previous: function() {
