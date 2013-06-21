@@ -206,8 +206,9 @@ Presentation.prototype={
         },
 
         _scaleDocument: function() {
-                var ratio = 1/Math.max(this.container.clientWidth/window.innerWidth,
-                                       this.container.clientHeight/window.innerHeight);
+		var el = this.slides[0].element;
+                var ratio = 1/Math.max(el.clientWidth/window.innerWidth,
+                                       el.clientHeight/window.innerHeight);
                 console.debug("Scaling to ratio", ratio);
                 this._applyScale(ratio);
         },
