@@ -69,6 +69,18 @@ BODY {
 	font: 16px/1.8 Verdana, "Lucida Grande", Lucida, sans-serif;
 }
 
+body.slideshow-running:before {
+	content: " ";
+	display: block;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: black;
+	z-index: 2147483646;
+}
+
 p {
 	margin-top: 0;
 	margin-bottom: 1em;
@@ -94,6 +106,7 @@ figcaption.customised {
 
 .slideshow {
 	counter-reset:paging;
+	z-index: 10000;
 }
 
 .slideshow.mode-full {
@@ -105,10 +118,7 @@ figcaption.customised {
 	width: 1024px;
 	height: 640px;
 	background: #000;
-}
-
-.slideshow.mode-full .slide {
-	
+	z-index: 2147483647;
 }
 
 
