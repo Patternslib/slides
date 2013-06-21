@@ -157,6 +157,7 @@ Presentation.prototype={
                         this.slides[0].markActive();
                 }
 
+		addClass(document.body, "slideshow-running");
                 addClass(this.container, "mode-full");
                 removeClass(this.container, "mode-list");
                 this._scaleDocument();
@@ -173,6 +174,7 @@ Presentation.prototype={
                 this.events.removeAll();
                 removeClass(this.container, "mode-full");
                 addClass(this.container, "mode-list");
+		removeClass(document.body, "slideshow-running");
                 this._applyScale(1);
         },
 
