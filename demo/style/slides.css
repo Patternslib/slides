@@ -1340,6 +1340,11 @@ h3 {
 	font: 13px/17px pbi;
 }
 
+.slide[dir="rtl"] .slide-content section:before {
+	left: auto;
+	right: 60px;	
+}
+
 .slide.no-logo .slide-content section:before,
 .slide.no-brandmark .slide-content section:after {
 	display: none;	
@@ -1359,6 +1364,11 @@ h3 {
 	height: 274px;
 	overflow: hidden;
 	z-index: 1;
+}
+
+.slide[dir="rtl"] .slide-content section:after {
+	left: 0;
+	right: auto;
 }
 
 /* @end */
