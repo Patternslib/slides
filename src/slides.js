@@ -15,7 +15,7 @@ function hasClass(el, name) {
 function addClass(el, name) {
         if (hasClass(el, name))
                 return;
-        el.className+=" active";
+        el.className+=" " + name;
 }
 
 
@@ -110,6 +110,8 @@ Slide.prototype={
 
 function Presentation(container) {
         this.container=container;
+        removeClass(this.container, "mode-full");
+        addClass(this.container, "mode-list");
         this.handlers=[];
         this.scan();
         this.events=new EventTracker();
@@ -155,7 +157,8 @@ Presentation.prototype={
                         this.slides[0].markActive();
                 }
 
-                addClass(this.container, "presentation-running");
+                addClass(this.container, "mode-full");
+                removeClass(this.container, "mode-list");
                 this.container.style.position="fixed";
                 this.container.style.zIndex="5000";
                 this._scaleDocument();
@@ -170,7 +173,8 @@ Presentation.prototype={
                 this.running=false;
 
                 this.events.removeAll();
-                removeClass(this.container, "presentation-running");
+                removeClass(this.container, "mode-full");
+                addClass(this.container, "mode-list");
                 this._applyScale(1);
                 this.container.style.position="";
                 this.container.style.zIndex="";
