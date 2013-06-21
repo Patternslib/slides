@@ -159,8 +159,6 @@ Presentation.prototype={
 
                 addClass(this.container, "mode-full");
                 removeClass(this.container, "mode-list");
-                this.container.style.position="fixed";
-                this.container.style.zIndex="5000";
                 this._scaleDocument();
                 this.events.add(window, "resize", this._scaleDocument, this);
                 this.events.add(document, "keydown", this._onKey, this);
@@ -176,8 +174,6 @@ Presentation.prototype={
                 removeClass(this.container, "mode-full");
                 addClass(this.container, "mode-list");
                 this._applyScale(1);
-                this.container.style.position="";
-                this.container.style.zIndex="";
         },
 
         previous: function() {
