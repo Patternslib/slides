@@ -100,8 +100,12 @@ figcaption.customised {
 	width: 1024px;
 	height: 600px;
 	-webkit-transform-origin: 0 0;
-	left: 50%;
-	margin-left: -512px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.slideshow.mode-full .slide {
+	
 }
 
 
