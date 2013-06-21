@@ -1627,7 +1627,8 @@ a.pat-markdown {
 				}
 
 .slide.full section header,
-.slide.full .slide-content > section > h1 {
+.slide.full .slide-content > section > h1,
+.slide.full .slide-content > section > hgroup {
 	min-height: 300px;
 	display: block;
 	top: 0;
@@ -1668,14 +1669,15 @@ a.pat-markdown {
 	text-shadow: white 0 0 55px;
 }
 
-.slide.full section header h2,
-.slide.full .slide-content > section > h1 {
+.slide.full .slide-content > section > h1,
+.slide.full .slide-content > section > hgroup > h1 {
 	color: white;
 	margin-bottom: 5px;
+	margin-top: 0;
+	font-size: 40px;
 }
 
-.slide.full section header .byline,
-.slide.full .slide-content > section > hgroup .byline {
+.slide.full .slide-content > section > hgroup h2 {
 	font-size: 18px;
 	letter-spacing: 1px;
 	color: white;
