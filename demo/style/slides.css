@@ -86,9 +86,9 @@ p {
 	margin-bottom: 1em;
 }
 
-/*.slideshow.mode-full .slide:not(.animated) .animated {
+.slideshow.mode-full .slide:not(.active) .animated {
 	display: none;
-}*/
+}
 
 figcaption.customised {
 	position: absolute;
