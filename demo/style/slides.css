@@ -86,9 +86,9 @@ p {
 	margin-bottom: 1em;
 }
 
-.slideshow.mode-full .slide:not(:target) .animated {
+/*.slideshow.mode-full .slide:not(.animated) .animated {
 	display: none;
-}
+}*/
 
 figcaption.customised {
 	position: absolute;
@@ -1157,7 +1157,8 @@ figure.shadowed {
 /* @group Slide header */
 
 .slide header,
-.slide .slide-content > section > h1 {
+.slide .slide-content > section > h1,
+.slide .slide-content > section > hgroup {
 	color:#666;
 	height: 50px;
 	border-bottom: 1px solid silver;
@@ -1604,7 +1605,7 @@ a.pat-markdown {
 
 /* @group Full */
 
-.slide.slideshow.mode-full section {
+.slide.full section {
 }
 
 #plato {
@@ -1625,8 +1626,8 @@ a.pat-markdown {
 	text-align: center;
 				}
 
-.slide.slideshow.mode-full section header,
-.slide.slideshow.mode-full .slide-content > section > h1 {
+.slide.full section header,
+.slide.full .slide-content > section > h1 {
 	min-height: 300px;
 	display: block;
 	top: 0;
@@ -1646,14 +1647,14 @@ a.pat-markdown {
 
 @media print {
 
-.slide.slideshow.mode-full section header,
-.slide.slideshow.mode-full .slide-content > section > header {
+.slide.full section header,
+.slide.full .slide-content > section > header {
 	background: url(images/chrome-gradient-fix.png) repeat-x 0 0;
 }
 
 }
 
-.slide.slideshow.mode-full section .text-overlay {
+.slide.full section .text-overlay {
 	position: absolute;
 	width: 910px;
 	top: 0;
@@ -1667,23 +1668,24 @@ a.pat-markdown {
 	text-shadow: white 0 0 55px;
 }
 
-.slide.slideshow.mode-full section header h2,
-.slide.slideshow.mode-full .slide-content > section > h1 {
+.slide.full section header h2,
+.slide.full .slide-content > section > h1 {
 	color: white;
 	margin-bottom: 5px;
 }
 
-.slide.slideshow.mode-full section header .byline,.slide.slideshow.mode-full .slide-content > section > hgroup .byline {
+.slide.full section header .byline,
+.slide.full .slide-content > section > hgroup .byline {
 	font-size: 18px;
 	letter-spacing: 1px;
 	color: white;
 }
 
-.slide.slideshow.mode-full section:before {
+.slide.full section:before {
 	display: none;
 }
 
-.slide.slideshow.mode-full section > img {
+.slide.full section > img {
 	max-width: 100% !important;
 	max-height: 100% !important;
 	position: absolute;
@@ -1707,7 +1709,8 @@ a.pat-markdown {
 }
 
 .slide.sheet section header,
-.slide.sheet .slide-content > section > h1 {
+.slide.sheet .slide-content > section > h1,
+.slide.sheet .slide-content > section > hgroup > h1 {
 	height: 640px;
 	padding: 0;
 	border-style: none;
@@ -1815,11 +1818,7 @@ a.pat-markdown {
 	transform:translateY(-50%);
 	}
 
-.slide.cover header {
-	border-bottom-style: none;
-}
-
-.slide.cover section h2 {
+.slide.cover .slide-content > section > hgroup {
 	position: absolute;
 	bottom: 50%;
 	margin: 0;
@@ -1827,21 +1826,29 @@ a.pat-markdown {
 	right: 60px;
 	left: 60px;
 	border-bottom: 1px solid gray;
+	top: 250px;
+}
+
+.slide.cover .slide-content > section > hgroup h1 {
+	margin-top: 0;
+	font-size: 60px;
+	margin-bottom: 25px;
+}
+
+.slide.cover section h2 {
+	color: #666666;
+	font: italic 25px/2 Georgia, "Times New Roman", Times, serif;
+	width: 510px;
+	padding-right: 51%;
+	padding-bottom: 60px;
+	position: relative;
+	padding-top: 0;
+	margin-top: 0;
 }
 
 .slide.cover section h2:before{
 	top: -230px;
 	left: 0;
-}
-
-.slide.cover section .byline {
-	padding-top: 205px;
-	color: #666666;
-	font: italic 1em/2 Georgia, "Times New Roman", Times, serif;
-	width: 510px;
-	padding-right: 51%;
-	padding-bottom: 60px;
-	position: relative;
 }
 
 .slide.cover header:before {
