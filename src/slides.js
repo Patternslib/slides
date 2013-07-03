@@ -240,8 +240,6 @@ Presentation.prototype={
                         case 33: // PageUp
                         case 38: // Up
                         case 37: // Left
-                        case 72: // H
-                        case 75: // K
                                 event.preventDefault();
                                 this.previous();
                                 break;
@@ -250,8 +248,6 @@ Presentation.prototype={
                         case 34: // PageDown
                         case 39: // Right
                         case 40: // Down
-                        case 74: // J
-                        case 76: // L
                                 event.preventDefault();
                                 this.next();
                                 break;
