@@ -102,7 +102,7 @@ Slide.prototype={
         getText: function(selector) {
                 var el = this.element.querySelector(selector);
                 return el.text;
-        },
+        }
 
 };
 
@@ -115,7 +115,7 @@ function Presentation(container) {
         this.handlers=[];
         this.scan();
         this.events=new EventTracker();
-};
+}
 
 
 Presentation.prototype={
@@ -140,11 +140,11 @@ Presentation.prototype={
         // Identifier of touch event being tracked
         touch_identifier: null,
 
-        // X page position where a touch event started.
-        touch_start_x: null,
+        // Page position where a touch event started.
+        touch_start_position: null,
 
-        // Last seen X page position during a touch.
-        touch_last_x: null,
+        // Last seen page position during a touch.
+        touch_last_position: null,
 
         showNotes: function(notes) {
                 if (this.notes_window===false)
@@ -268,8 +268,8 @@ Presentation.prototype={
                 if (event.touches.length!==1)
                         return;
                 this.touch_identifier=event.touches[0].identifier;
-                this.touch_start_x=event.touches[0].pageX;
-                this.touch_last_x=event.touches[0].pageX;
+                this.touch_start_position=[event.touches[0].pageX, event.touches[0].pageY];
+                this.touch_last_position=[event.touches[0].pageX, event.touches[0].pageY];
                 this.events.add(document, "touchmove", this._onTouchMove, this);
                 this.events.add(document, "touchend", this._onTouchEnd, this);
                 this.events.add(document, "touchcancel", this._onTouchCancel, this);
@@ -278,7 +278,8 @@ Presentation.prototype={
         _onTouchMove: function(event) {
                 for (var i=0; i<event.touches.length; i++)
                         if (event.touches[i].identifier===this.touch_identifier) {
-                                this.touch_last_x=event.touches[i].pageX;
+                                this.touch_last_position[0]=event.touches[i].pageX;
+                                this.touch_last_position[1]=event.touches[i].pageY;
                                 event.preventDefault();
                                 break;
                         }
@@ -288,11 +289,21 @@ Presentation.prototype={
                 for (var i=0; i<event.changedTouches.length && this.touch_identifier!==null; i++)
                         if (event.changedTouches[i].identifier===this.touch_identifier) {
                                 this.touch_identifier=null;
-                                var delta = this.touch_start_x-this.touch_last_x;
-                                if (delta<50)
-                                        this.previous();
-                                else if (delta>50)
-                                        this.next();
+                                var delta_x = this.touch_start_position[0]-this.touch_last_position[0],
+                                    delta_y = this.touch_start_position[1]-this.touch_last_position[1],
+                                    offset_x = Math.abs(delta_x),
+                                    offset_y = Math.abs(delta_y);
+
+                                if (Math.max(offset_x, offset_y)<50)
+                                        continue;
+
+                                if (offset_x>offset_y) {
+                                        if (delta_x<0)
+                                                this.previous();
+                                        else
+                                                this.next();
+                                } else if (delta_y<0)
+                                        this.stop();
                         }
         },
 
@@ -314,7 +325,7 @@ Presentation.prototype={
                         if (active)
                                 this.current_slide_index=i;
                 }
-        },
+        }
 };
 
 window.Presentation=Presentation;
