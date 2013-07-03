@@ -1,12 +1,12 @@
-# Patternslib/slides - a simple browser slideshow library
+# Simple HTML/CSS slideshows
 
 [Patternslib/slides](https://github.com/Patternslib/slides) is a minimal
 slideshows library. It is minimal for several reasons:
 
-* no dependencies on other javascript libraries
-* no hardcoded styling
+* No dependencies on other javascript libraries.
+* No hardcoded styling: everything can be handled through CSS.
 
-Even with its minimal design a number of interesting features is available:
+Even with its minimal design a number of interesting features are available:
 
 * navigating between slides using swipe gestures
 * multiple slideshows on a page
@@ -25,7 +25,7 @@ presenter notes.
         <hgroup>
           <h1>Patternslib/slides</h1>
           <h2>Create slideshows in HTML 5</h2>
-        </hgropu>
+        </hgroup>
       </section>
     </div>
   </div>
@@ -56,11 +56,11 @@ You can start a presentation by clicking on a slide. This will start the
 presentation at the given slide. In presentation mode a number of keyboard
 and swipe controls are available:
 
-* Escape key: exit presentation
-* PageUp, Up, and Left keys: go to previous slide
-* PageDown, Down, Right and Space keys: go to next slide
-* Home key: jump to the first slide
-* End key: jump to the last slide
+* `Esc` key: exit presentation
+* `PageUp`, `Up`, and `Left` keys: go to previous slide
+* `PageDown`, `Down`, `Right` and `Space` keys: go to next slide
+* `Home` key: jump to the first slide
+* `End` key: jump to the last slide
 * Swipe left: go to the previous slide
 * Swipe right: go to the next slide
 * Swipe down: exit presentation
