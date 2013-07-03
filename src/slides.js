@@ -137,8 +137,14 @@ Presentation.prototype={
         // The currently shown slide.
         current_slide_index: null,
 
-        // X page position where a touch event started
+        // Identifier of touch event being tracked
+        touch_identifier: null,
+
+        // X page position where a touch event started.
         touch_start_x: null,
+
+        // Last seen X page position during a touch.
+        touch_last_x: null,
 
         showNotes: function(notes) {
                 if (this.notes_window===false)
@@ -157,7 +163,7 @@ Presentation.prototype={
                         this.slides[0].markActive();
                 }
 
-		addClass(document.body, "slideshow-running");
+                addClass(document.body, "slideshow-running");
                 addClass(this.container, "mode-full");
                 removeClass(this.container, "mode-list");
                 this._scaleDocument();
@@ -174,7 +180,7 @@ Presentation.prototype={
                 this.events.removeAll();
                 removeClass(this.container, "mode-full");
                 addClass(this.container, "mode-list");
-		removeClass(document.body, "slideshow-running");
+                removeClass(document.body, "slideshow-running");
                 this._applyScale(1);
         },
 
@@ -208,10 +214,9 @@ Presentation.prototype={
         },
 
         _scaleDocument: function() {
-		var el = this.slides[0].element;
+                var el = this.slides[0].element;
                 var ratio = 1/Math.max(el.clientWidth/window.innerWidth,
                                        el.clientHeight/window.innerHeight);
-                console.debug("Scaling to ratio", ratio);
                 this._applyScale(ratio);
         },
 
@@ -266,28 +271,39 @@ Presentation.prototype={
         _onTouchStart: function(event) {
                 if (event.touches.length!==1)
                         return;
+                this.touch_identifier=event.touches[0].identifier;
                 this.touch_start_x=event.touches[0].pageX;
+                this.touch_last_x=event.touches[0].pageX;
                 this.events.add(document, "touchmove", this._onTouchMove, this);
+                this.events.add(document, "touchend", this._onTouchEnd, this);
                 this.events.add(document, "touchcancel", this._onTouchCancel, this);
         },
 
         _onTouchMove: function(event) {
-                if (event.touches.length!==1 || this.touch_start_x===null)
-                        return;
+                for (var i=0; i<event.touches.length; i++)
+                        if (event.touches[i].identifier===this.touch_identifier) {
+                                this.touch_last_x=event.touches[i].pageX;
+                                event.preventDefault();
+                                break;
+                        }
+        },
 
-                event.preventDefault();
-                var delta = event.touches[0].pageX-this.touch_start_x;
-                if (Math.abs(delta)<50)
-                        return;
-                if (delta<0)
-                        this.previous();
-                else
-                        this.next();
+        _onTouchEnd: function(event) {
+                for (var i=0; i<event.changedTouches.length && this.touch_identifier!==null; i++)
+                        if (event.changedTouches[i].identifier===this.touch_identifier) {
+                                this.touch_identifier=null;
+                                var delta = this.touch_start_x-this.touch_last_x;
+                                if (delta<50)
+                                        this.previous();
+                                else if (delta>50)
+                                        this.next();
+                        }
         },
 
         _onTouchCancel: function() {
                 this.touch_start_x=null;
                 this.events.remove(document, "touchmove", this._onTouchMove);
+                this.events.remove(document, "touchend", this._onTouchEnd);
                 this.events.remove(document, "touchcancel", this._onTouchCancel);
         },
 
