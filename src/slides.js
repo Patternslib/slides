@@ -204,7 +204,6 @@ function Presentation(container) {
         this.container=container;
         removeClass(this.container, "mode-full");
         addClass(this.container, "mode-list");
-        this.handlers=[];
         this.scan();
         this.events=new EventTracker();
 }
