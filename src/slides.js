@@ -69,11 +69,12 @@ EventTracker.prototype={
 
 
 //////////////////////////////////////////////////////////////////////
-function Slide(presentation, element, active) {
+function Slide(presentation, element, active, number) {
         this.presentation=presentation;
         this.element=element;
         this.id=element.id;
         this.active=!!active;
+        this.number=number;
         element.addEventListener("click", this.onClick.bind(this));
 }
 
@@ -88,14 +89,16 @@ Slide.prototype={
         },
 
         onClick: function() {
-                this.presentation._show(this);
+                this.presentation._showSlide(this);
         },
 
         markActive: function() {
+                this.active=true;
                 addClass(this.element, "active");
         },
 
         markInactive: function() {
+                this.active=false;
                 removeClass(this.element, "active");
         },
 
@@ -109,6 +112,7 @@ Slide.prototype={
 
 //////////////////////////////////////////////////////////////////////
 function Notes(presentation) {
+        this.presentation=presentation;
 }
 
 Notes.prototype={
@@ -140,27 +144,46 @@ Notes.prototype={
                 }
         },
 
+        update: function(slide) {
+                this.document.querySelector("#slides .current").firstChild.textContent=slide.number;
+        },
+
         _addContent: function() {
                 var body = this.document.body,
-                    timer, span;
+                    container, span;
 
-                timer=this.document.createElement("div");
-                timer.id="timer";
+                // Create the slide index
+                container=this.document.createElement("div");
+                container.id="slides";
+                span=this.document.createElement("span");
+                span.className="current";
+                span.appendChild(this.document.createTextNode("0"));
+                container.appendChild(span);
+                span.appendChild(this.document.createTextNode("/"));
+                span=this.document.createElement("span");
+                span.className="total";
+                span.appendChild(this.document.createTextNode(this.presentation.slides.length));
+                container.appendChild(span);
+                body.appendChild(container);
+
+                // Create the timer
+                container=this.document.createElement("div");
+                container.id="timer";
                 span=this.document.createElement("span");
                 span.className="hour";
                 span.appendChild(this.document.createTextNode("00"));
-                timer.appendChild(span);
-                timer.appendChild(this.document.createTextNode(":"));
+                container.appendChild(span);
+                container.appendChild(this.document.createTextNode(":"));
                 span=this.document.createElement("span");
                 span.className="minute";
                 span.appendChild(this.document.createTextNode("00"));
-                timer.appendChild(span);
-                timer.appendChild(this.document.createTextNode(":"));
+                container.appendChild(span);
+                container.appendChild(this.document.createTextNode(":"));
                 span=this.document.createElement("span");
                 span.className="second";
                 span.appendChild(this.document.createTextNode("00"));
-                timer.appendChild(span);
-                body.appendChild(timer);
+                container.appendChild(span);
+                body.appendChild(container);
         },
 
         _onUnload: function() {
@@ -242,11 +265,8 @@ Presentation.prototype={
                         return;
 
                 this.running=true;
-                if (this.current_slide_index===null) {
+                if (this.current_slide_index===null)
                         this.current_slide_index=[0];
-                        this.slides[0].markActive();
-                }
-
                 addClass(document.body, "slideshow-running");
                 addClass(this.container, "mode-full");
                 removeClass(this.container, "mode-list");
@@ -254,8 +274,9 @@ Presentation.prototype={
                 this.events.add(window, "resize", this._scaleDocument, this);
                 this.events.add(document, "keydown", this._onKey, this);
                 this.events.add(document, "touchstart", this._onTouchStart, this);
-                this.notes_window=new Notes();
+                this.notes_window=new Notes(this);
                 this.notes_window.open();
+                this._display(0);
         },
 
         stop: function(slide) {
@@ -274,14 +295,18 @@ Presentation.prototype={
                 }
         },
 
+        first: function() {
+                if (!this.running)
+                        return;
+                this._display(0);
+        },
+
         previous: function() {
                 if (!this.running)
                         return;
                 if (!this.current_slide_index)
                         return;
-                this.slides[this.current_slide_index].markInactive();
-                this.current_slide_index--;
-                this.slides[this.current_slide_index].markActive();
+                this._display(this.current_slide_index-1);
         },
 
         next: function() {
@@ -289,9 +314,13 @@ Presentation.prototype={
                         return;
                 if (this.current_slide_index==(this.slides.length-1))
                         return;
-                this.slides[this.current_slide_index].markInactive();
-                this.current_slide_index++;
-                this.slides[this.current_slide_index].markActive();
+                this._display(this.current_slide_index+1);
+        },
+
+        last: function() {
+                if (!this.running)
+                        return;
+                this._display(this.slides.length-1);
         },
 
         _applyScale: function(ratio) {
@@ -310,14 +339,24 @@ Presentation.prototype={
                 this._applyScale(ratio);
         },
 
-        _show: function(slide) {
+        _showSlide: function(slide) {
                 for (var i=0; i<this.slides.length; i++)
                         if (this.slides[i]===slide) {
-                                this.current_slide_index=i;
-                                slide.markActive();
-                        } else
-                                this.slides[i].markInactive();
+                                this._display(i);
+                                break;
+                        }
                 this.start();
+        },
+
+        _display: function(index) {
+                for (var i=0; i<this.slides.length; i++)
+                        if (i==index)
+                                this.slides[i].markActive();
+                        else if (this.slides[i].active)
+                                this.slides[i].markInactive();
+                this.current_slide_index=index;
+                if (this.notes_window!==null)
+                        this.notes_window.update(this.slides[this.current_slide_index]);
         },
 
         _onKey: function(event) {
@@ -413,7 +452,7 @@ Presentation.prototype={
                 for (var i=0; i<elements.length; i++) {
                         var element = elements[i],
                             active = hasClass(element, "active");
-                        this.slides.push(new Slide(this, element, active));
+                        this.slides.push(new Slide(this, element, active, i+1));
                         if (active)
                                 this.current_slide_index=i;
                 }
