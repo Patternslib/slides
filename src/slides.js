@@ -39,7 +39,7 @@ EventTracker.prototype={
         add: function(el, type, handler, context) {
                 var bound_handler = handler.bind(context);
                 this.listeners.push({el: el,
-                                     type: type, 
+                                     type: type,
                                      handler: handler,
                                      bound_handler: bound_handler});
                 el.addEventListener(type, bound_handler);
@@ -106,6 +106,98 @@ Slide.prototype={
 
 };
 
+
+//////////////////////////////////////////////////////////////////////
+function Notes(presentation) {
+}
+
+Notes.prototype={
+        window: null,
+        document: null,
+        timer_inter: null,
+        time_start: null,
+        global_onunload: null,
+
+        open: function(notes) {
+                if (this.window===null)
+                        this.window=window.open("about:blank", "presenter-notes", "menubar=no,personalbar=no,location=no,status=no");
+                if (this.window===null)
+                        return false;
+                this.document=this.window.document;
+                this.addContent();
+                this.startTimer();
+                this.global_onunload=window.onunload;
+                window.onunload=this.onUnload.bind(this);
+                return true;
+        },
+
+        close: function(notes) {
+                this.stopTimer();
+                window.onunload=this.global_ununload;
+                if (this.window!==null) {
+                        this.window.close();
+                        this.window=null;
+                }
+        },
+
+        addContent: function() {
+                var body = this.document.body,
+                    timer, span;
+
+                timer=this.document.createElement("div");
+                timer.id="timer";
+                span=this.document.createElement("span");
+                span.className="hour";
+                span.appendChild(this.document.createTextNode("00"));
+                timer.appendChild(span);
+                timer.appendChild(this.document.createTextNode(":"));
+                span=this.document.createElement("span");
+                span.className="minute";
+                span.appendChild(this.document.createTextNode("00"));
+                timer.appendChild(span);
+                timer.appendChild(this.document.createTextNode(":"));
+                span=this.document.createElement("span");
+                span.className="second";
+                span.appendChild(this.document.createTextNode("00"));
+                timer.appendChild(span);
+                body.appendChild(timer);
+        },
+
+        onUnload: function() {
+                if (this.global_onunload!==null)
+                        this.global_onunload();
+                this.close();
+        },
+
+        startTimer: function() {
+                this.time_start=new Date();
+                this.updateTimer();
+                setInterval(this.updateTimer.bind(this), 1000);
+        },
+
+        stopTimer: function() {
+                if (this.timer_interval!==null) {
+                        clearInterval(this.timer_interval);
+                        this.timer_interval=null;
+                }
+        },
+
+        twoDigitNumber: function(num) {
+                var buf = num.toString();
+                return buf.length>1 ? buf : "0"+buf;
+        },
+
+        updateTimer: function() {
+                var delta = new Date(new Date()-this.time_start),
+                    digits = this.twoDigitNumber;
+                this.document.querySelector("#timer .hour").firstChild.textContent=delta.getUTCHours();
+                this.document.querySelector("#timer .minute").firstChild.textContent=digits(delta.getUTCMinutes());
+                this.document.querySelector("#timer .second").firstChild.textContent=digits(delta.getUTCSeconds());
+        },
+
+};
+
+
 //////////////////////////////////////////////////////////////////////
 
 function Presentation(container) {
@@ -119,7 +211,7 @@ function Presentation(container) {
 
 
 Presentation.prototype={
-        // Handle for the window containing the presentation notes.
+        // Notes instance
         notes_window: null,
 
         // Flag if we are currently running in presentation mode.
@@ -146,13 +238,6 @@ Presentation.prototype={
         // Last seen page position during a touch.
         touch_last_position: null,
 
-        showNotes: function(notes) {
-                if (this.notes_window===false)
-                        notes_window=window.open("about:blank", "presenter-notes", "menubar=no,personalbar=no,location=no,status=no");
-                if (this.notes_window===null)
-                        return;
-        },
-
         start: function(slide) {
                 if (this.running)
                         return;
@@ -170,6 +255,8 @@ Presentation.prototype={
                 this.events.add(window, "resize", this._scaleDocument, this);
                 this.events.add(document, "keydown", this._onKey, this);
                 this.events.add(document, "touchstart", this._onTouchStart, this);
+                this.notes_window=new Notes();
+                this.notes_window.open();
         },
 
         stop: function(slide) {
@@ -182,6 +269,10 @@ Presentation.prototype={
                 addClass(this.container, "mode-list");
                 removeClass(document.body, "slideshow-running");
                 this._applyScale(1);
+                if (this.notes_window!==null) {
+                        this.notes_window.close();
+                        this.notes_window=null;
+                }
         },
 
         previous: function() {
