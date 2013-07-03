@@ -80,11 +80,11 @@ function Slide(presentation, element, active) {
 
 Slide.prototype={
         title: function() {
-                return this.getText(this.presentation.slide_title_selector);
+                return this._getText(this.presentation.slide_title_selector);
         },
 
         notes: function() {
-                return this.getText(this.presentation.slide_notes_selector);
+                return this._getText(this.presentation.slide_notes_selector);
         },
 
         onClick: function() {
@@ -99,7 +99,7 @@ Slide.prototype={
                 removeClass(this.element, "active");
         },
 
-        getText: function(selector) {
+        _getText: function(selector) {
                 var el = this.element.querySelector(selector);
                 return el.text;
         }
@@ -124,15 +124,15 @@ Notes.prototype={
                 if (this.window===null)
                         return false;
                 this.document=this.window.document;
-                this.addContent();
-                this.startTimer();
+                this._addContent();
+                this._startTimer();
                 this.global_onunload=window.onunload;
-                window.onunload=this.onUnload.bind(this);
+                window.onunload=this._onUnload.bind(this);
                 return true;
         },
 
         close: function(notes) {
-                this.stopTimer();
+                this._stopTimer();
                 window.onunload=this.global_ununload;
                 if (this.window!==null) {
                         this.window.close();
@@ -140,7 +140,7 @@ Notes.prototype={
                 }
         },
 
-        addContent: function() {
+        _addContent: function() {
                 var body = this.document.body,
                     timer, span;
 
@@ -163,33 +163,33 @@ Notes.prototype={
                 body.appendChild(timer);
         },
 
-        onUnload: function() {
+        _onUnload: function() {
                 if (this.global_onunload!==null)
                         this.global_onunload();
                 this.close();
         },
 
-        startTimer: function() {
+        _startTimer: function() {
                 this.time_start=new Date();
-                this.updateTimer();
-                setInterval(this.updateTimer.bind(this), 1000);
+                this._updateTimer();
+                setInterval(this._updateTimer.bind(this), 1000);
         },
 
-        stopTimer: function() {
+        _stopTimer: function() {
                 if (this.timer_interval!==null) {
                         clearInterval(this.timer_interval);
                         this.timer_interval=null;
                 }
         },
 
-        twoDigitNumber: function(num) {
+        _twoDigitNumber: function(num) {
                 var buf = num.toString();
                 return buf.length>1 ? buf : "0"+buf;
         },
 
-        updateTimer: function() {
+        _updateTimer: function() {
                 var delta = new Date(new Date()-this.time_start),
-                    digits = this.twoDigitNumber;
+                    digits = this._twoDigitNumber;
                 this.document.querySelector("#timer .hour").firstChild.textContent=delta.getUTCHours();
                 this.document.querySelector("#timer .minute").firstChild.textContent=digits(delta.getUTCMinutes());
                 this.document.querySelector("#timer .second").firstChild.textContent=digits(delta.getUTCSeconds());
