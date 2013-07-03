@@ -308,7 +308,9 @@ Presentation.prototype={
         },
 
         _onTouchCancel: function() {
-                this.touch_start_x=null;
+                this.touch_identifier=null;
+                this.touch_start_position=null;
+                this.touch_last_position=null;
                 this.events.remove(document, "touchmove", this._onTouchMove);
                 this.events.remove(document, "touchend", this._onTouchEnd);
                 this.events.remove(document, "touchcancel", this._onTouchCancel);
