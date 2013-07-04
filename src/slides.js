@@ -312,14 +312,11 @@ Presentation.prototype={
                 this.events.add(window, "resize", this._scaleDocument, this);
                 this.events.add(document, "keydown", this._onKey, this);
                 this.events.add(document, "touchstart", this._onTouchStart, this);
-                this._display(this.current_slide_index);
-
                 var event = document.createEvent("CustomEvent");
                 event.initCustomEvent("SlideshowStart", true, true,
-                                {slideshow: this.container,
-                                 slide: this.slides[this.current_slide_index].element,
-                                 number: this.current_slide_index+1});
+                                {slideshow: this.container});
                 this.container.dispatchEvent(event);
+                this._display(this.current_slide_index);
         },
 
         stop: function(slide) {
