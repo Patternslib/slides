@@ -161,9 +161,18 @@ Notes.prototype={
                         section.removeChild(section.firstChild);
 
                 if (notes && notes.childElementCount) {
-                        var children = notes.children;
+                        var children = notes.children, dir, lang;
                         for (var i=0; i<children.length; i++)
                                 section.appendChild(this.document.importNode(children[i], true));
+
+                        for (var w=notes; w!==null && (!dir || !lang); w=w.parentElement) {
+                                if (!dir && w.dir)
+                                        dir=w.dir;
+                                if (!lang && w.lang)
+                                        lang=w.lang;
+                        }
+                        section.dir=dir || "";
+                        section.lang=lang || "";
                 }
         },
 
