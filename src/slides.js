@@ -113,7 +113,9 @@ Slide.prototype={
 //////////////////////////////////////////////////////////////////////
 function Notes(presentation) {
         this.presentation=presentation;
+        this.time_start=new Date();
 }
+
 
 Notes.prototype={
         window: null,
@@ -122,8 +124,8 @@ Notes.prototype={
         time_start: null,
         global_onunload: null,
 
-        open: function(notes) {
-                if (this.window===null)
+        show: function(notes) {
+                if (this.window===null || this.window.closed)
                         this.window=window.open("about:blank", "presenter-notes", "menubar=no,personalbar=no,location=no,status=no");
                 if (this.window===null)
                         return false;
@@ -135,17 +137,25 @@ Notes.prototype={
                 return true;
         },
 
-        close: function(notes) {
+        hide: function(notes) {
                 this._stopTimer();
                 window.onunload=this.global_ununload;
                 if (this.window!==null) {
-                        this.window.close();
+                        if (!this.window.closed)
+                                this.window.close();
                         this.window=null;
+                        this.document=null;
                 }
         },
 
-        update: function(slide) {
-                this.document.querySelector("#slides .current").firstChild.textContent=slide.number;
+        update: function() {
+                if (this.window!==null) {
+                        this.document.querySelector("#slides .current").firstChild.textContent=this.presentation.current_slide_index+1;
+                }
+        },
+
+        isOpen: function() {
+                return this.window && !this.window.closed;
         },
 
         _addContent: function() {
@@ -157,7 +167,7 @@ Notes.prototype={
                 container.id="slides";
                 span=this.document.createElement("span");
                 span.className="current";
-                span.appendChild(this.document.createTextNode("0"));
+                span.appendChild(this.document.createTextNode(this.presentation.current_slide_index+1));
                 container.appendChild(span);
                 span.appendChild(this.document.createTextNode("/"));
                 span=this.document.createElement("span");
@@ -189,13 +199,12 @@ Notes.prototype={
         _onUnload: function() {
                 if (this.global_onunload!==null)
                         this.global_onunload();
-                this.close();
+                this.hide();
         },
 
         _startTimer: function() {
-                this.time_start=new Date();
+                this.timer_interval=setInterval(this._updateTimer.bind(this), 1000);
                 this._updateTimer();
-                setInterval(this._updateTimer.bind(this), 1000);
         },
 
         _stopTimer: function() {
@@ -211,13 +220,17 @@ Notes.prototype={
         },
 
         _updateTimer: function() {
+                if (this.window.closed) {
+                        this.hide();
+                        return;
+                }
+
                 var delta = new Date(new Date()-this.time_start),
                     digits = this._twoDigitNumber;
                 this.document.querySelector("#timer .hour").firstChild.textContent=delta.getUTCHours();
                 this.document.querySelector("#timer .minute").firstChild.textContent=digits(delta.getUTCMinutes());
                 this.document.querySelector("#timer .second").firstChild.textContent=digits(delta.getUTCSeconds());
-        },
-
+        }
 };
 
 
@@ -229,6 +242,7 @@ function Presentation(container) {
         addClass(this.container, "mode-list");
         this.scan();
         this.events=new EventTracker();
+        this.notes_window=new Notes(this);
 }
 
 
@@ -266,7 +280,7 @@ Presentation.prototype={
 
                 this.running=true;
                 if (this.current_slide_index===null)
-                        this.current_slide_index=[0];
+                        this.current_slide_index=0;
                 addClass(document.body, "slideshow-running");
                 addClass(this.container, "mode-full");
                 removeClass(this.container, "mode-list");
@@ -274,9 +288,7 @@ Presentation.prototype={
                 this.events.add(window, "resize", this._scaleDocument, this);
                 this.events.add(document, "keydown", this._onKey, this);
                 this.events.add(document, "touchstart", this._onTouchStart, this);
-                this.notes_window=new Notes(this);
-                this.notes_window.open();
-                this._display(0);
+                this._display(this.current_slide_index);
         },
 
         stop: function(slide) {
@@ -289,10 +301,14 @@ Presentation.prototype={
                 addClass(this.container, "mode-list");
                 removeClass(document.body, "slideshow-running");
                 this._applyScale(1);
-                if (this.notes_window!==null) {
-                        this.notes_window.close();
-                        this.notes_window=null;
-                }
+                this.notes_window.hide();
+        },
+
+        toggleNotesWindow: function() {
+                if (this.notes_window.isOpen())
+                        this.notes_window.hide();
+                else
+                        this.notes_window.show();
         },
 
         first: function() {
@@ -342,21 +358,23 @@ Presentation.prototype={
         _showSlide: function(slide) {
                 for (var i=0; i<this.slides.length; i++)
                         if (this.slides[i]===slide) {
-                                this._display(i);
+                                this.current_slide_index=i;
                                 break;
                         }
-                this.start();
+                if (this.running)
+                        this._display(this.current_slide_index);
+                else
+                        this.start();
         },
 
         _display: function(index) {
                 for (var i=0; i<this.slides.length; i++)
-                        if (i==index)
+                        if (i===index)
                                 this.slides[i].markActive();
                         else if (this.slides[i].active)
                                 this.slides[i].markInactive();
                 this.current_slide_index=index;
-                if (this.notes_window!==null)
-                        this.notes_window.update(this.slides[this.current_slide_index]);
+                this.notes_window.update();
         },
 
         _onKey: function(event) {
@@ -389,6 +407,10 @@ Presentation.prototype={
                         case 35: // End
                                 event.preventDefault();
                                 this.last();
+                                break;
+
+                        case 78: // N
+                                this.toggleNotesWindow();
                                 break;
                 }
         },
