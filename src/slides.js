@@ -180,22 +180,9 @@ Notes.prototype={
                 body.appendChild(container);
 
                 // Create the timer
-                container=this.document.createElement("div");
+                container=this.document.createElement("timer");
                 container.id="timer";
-                span=this.document.createElement("span");
-                span.className="hour";
-                span.appendChild(this.document.createTextNode("00"));
-                container.appendChild(span);
-                container.appendChild(this.document.createTextNode(":"));
-                span=this.document.createElement("span");
-                span.className="minute";
-                span.appendChild(this.document.createTextNode("00"));
-                container.appendChild(span);
-                container.appendChild(this.document.createTextNode(":"));
-                span=this.document.createElement("span");
-                span.className="second";
-                span.appendChild(this.document.createTextNode("00"));
-                container.appendChild(span);
+                container.appendChild(this.document.createTextNode("00:00:00"));
                 body.appendChild(container);
         },
 
@@ -229,10 +216,11 @@ Notes.prototype={
                 }
 
                 var delta = new Date(new Date()-this.time_start),
-                    digits = this._twoDigitNumber;
-                this.document.querySelector("#timer .hour").firstChild.textContent=delta.getUTCHours();
-                this.document.querySelector("#timer .minute").firstChild.textContent=digits(delta.getUTCMinutes());
-                this.document.querySelector("#timer .second").firstChild.textContent=digits(delta.getUTCSeconds());
+                    digits = this._twoDigitNumber,
+                    timer = this.document.getElementById("timer");
+                timer.firstChild.textContent=delta.getUTCHours()+":"+digits(delta.getUTCMinutes())+":"+digits(delta.getUTCSeconds());
+                timer.setAttribute("datetime",
+                                delta.getUTCHours()+"h "+delta.getUTCMinutes()+"m "+delta.getUTCSeconds()+"s");
         }
 };
 
