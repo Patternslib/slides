@@ -10,6 +10,7 @@ Even with its minimal design a number of interesting features are available:
 
 * navigating between slides using swipe gestures
 * multiple slideshows on a page
+* separate window with timer and presenter notes for the current clise
 
 # Markup structure
 
@@ -61,6 +62,7 @@ and swipe controls are available:
 * `PageDown`, `Down`, `Right` and `Space` keys: go to next slide
 * `Home` key: jump to the first slide
 * `End` key: jump to the last slide
+* `N` key: toggle presenter notes window
 * Swipe left: go to the previous slide
 * Swipe right: go to the next slide
 * Swipe down: exit presentation
