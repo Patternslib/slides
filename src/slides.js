@@ -126,7 +126,8 @@ Notes.prototype={
 
         show: function(notes) {
                 if (this.window===null || this.window.closed)
-                        this.window=window.open("about:blank", "presenter-notes", "menubar=no,personalbar=no,location=no,status=no");
+                        this.window=window.open("about:blank", "presenter-notes",
+                                "menubar=no,personalbar=no,location=no,status=no");
                 if (this.window===null)
                         return false;
                 this.document=this.window.document;
@@ -150,7 +151,9 @@ Notes.prototype={
 
         update: function() {
                 if (this.window!==null) {
-                        this.document.querySelector("#slides .current").firstChild.textContent=this.presentation.current_slide_index+1;
+                        var number = this.presentation.current_slide_index+1,
+                            span = this.document.querySelector("#slides .current");
+                        span.firstChild.textContent=numnber;
                 }
         },
 
