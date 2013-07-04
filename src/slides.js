@@ -108,6 +108,7 @@ Slide.prototype={
 //////////////////////////////////////////////////////////////////////
 function Notes(presentation) {
         this.presentation=presentation;
+        this.events=new EventTracker();
         this.time_start=new Date();
 }
 
@@ -126,6 +127,7 @@ Notes.prototype={
                 if (this.window===null)
                         return false;
                 this.document=this.window.document;
+                this.events.add(this.document, "keydown", this.presentation._onKey, this.presentation);
                 this._addContent();
                 this.update();
                 this._startTimer();
@@ -135,6 +137,7 @@ Notes.prototype={
         },
 
         hide: function(notes) {
+                this.events.removeAll();
                 this._stopTimer();
                 window.onunload=this.global_ununload;
                 if (this.window!==null) {
@@ -429,6 +432,7 @@ Presentation.prototype={
                                 break;
 
                         case 78: // N
+                                event.preventDefault();
                                 this.toggleNotesWindow();
                                 break;
                 }
