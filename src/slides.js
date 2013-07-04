@@ -75,7 +75,7 @@ function Slide(presentation, element, active, number) {
         this.id=element.id;
         this.active=!!active;
         this.number=number;
-        element.addEventListener("click", this.onClick.bind(this));
+        element.addEventListener("click", this._onClick.bind(this));
 }
 
 
@@ -89,16 +89,16 @@ Slide.prototype={
                 return this.element.querySelector(this.presentation.slide_notes_selector);
         },
 
-        onClick: function() {
+        _onClick: function() {
                 this.presentation._showSlide(this);
         },
 
-        markActive: function() {
+        _markActive: function() {
                 this.active=true;
                 addClass(this.element, "active");
         },
 
-        markInactive: function() {
+        _markInactive: function() {
                 this.active=false;
                 removeClass(this.element, "active");
         }
@@ -186,6 +186,8 @@ Notes.prototype={
         _addContent: function() {
                 var body = this.document.body,
                     header, container, span;
+
+                body.id="presentor-notes";
 
                 header=this.document.createElement("header");
                 header.className="meta";
@@ -311,6 +313,13 @@ Presentation.prototype={
                 this.events.add(document, "keydown", this._onKey, this);
                 this.events.add(document, "touchstart", this._onTouchStart, this);
                 this._display(this.current_slide_index);
+
+                var event = document.createEvent("CustomEvent");
+                event.initCustomEvent("SlideshowStart", true, true,
+                                {slideshow: this.container,
+                                 slide: this.slides[this.current_slide_index].element,
+                                 number: this.current_slide_index+1});
+                this.container.dispatchEvent(event);
         },
 
         stop: function(slide) {
@@ -324,6 +333,20 @@ Presentation.prototype={
                 removeClass(document.body, "slideshow-running");
                 this._applyScale(1);
                 this.notes_window.hide();
+
+                var event;
+
+                event=document.createEvent("CustomEvent");
+                event.initCustomEvent("SlideHide", true, true,
+                                {slideshow: this,
+                                 slide: this.slides[this.current_slide_index],
+                                 number: this.current_slide_index+1});
+                this.slides[this.current_slide_index].element.dispatchEvent(event);
+
+                event=document.createEvent("CustomEvent");
+                event.initCustomEvent("SlideshowStop", true, true,
+                                {slideshow: this.container});
+                this.container.dispatchEvent(event);
         },
 
         toggleNotesWindow: function() {
@@ -390,13 +413,32 @@ Presentation.prototype={
         },
 
         _display: function(index) {
-                for (var i=0; i<this.slides.length; i++)
+                var event, slide;
+
+                for (var i=0; i<this.slides.length; i++) {
+                        slide=this.slides[i];
                         if (i===index)
-                                this.slides[i].markActive();
-                        else if (this.slides[i].active)
-                                this.slides[i].markInactive();
+                                slide._markActive();
+                        else if (slide.active) {
+                                slide._markInactive();
+                                event=document.createEvent("CustomEvent");
+                                event.initCustomEvent("SlideHide", true, true,
+                                                {slideshow: this,
+                                                 slide: slide,
+                                                 number: i+1});
+                                slide.element.dispatchEvent(event);
+                        }
+                }
                 this.current_slide_index=index;
                 this.notes_window.update();
+
+                event=document.createEvent("CustomEvent");
+                slide=this.slides[this.current_slide_index];
+                event.initCustomEvent("SlideDisplay", true, true,
+                                {slideshow: this,
+                                 slide: slide,
+                                 number: this.current_slide_index+1});
+                slide.element.dispatchEvent(event);
         },
 
         _onKey: function(event) {
