@@ -81,11 +81,12 @@ function Slide(presentation, element, active, number) {
 
 Slide.prototype={
         title: function() {
-                return this._getText(this.presentation.slide_title_selector);
+                var el = this.element.querySelector(this.presentation.slide_title_selector);
+                return el!==null ? el.textContent : null;
         },
 
         notes: function() {
-                return this._getText(this.presentation.slide_notes_selector);
+                return this.element.querySelector(this.presentation.slide_notes_selector);
         },
 
         onClick: function() {
@@ -100,13 +101,7 @@ Slide.prototype={
         markInactive: function() {
                 this.active=false;
                 removeClass(this.element, "active");
-        },
-
-        _getText: function(selector) {
-                var el = this.element.querySelector(selector);
-                return el.text;
         }
-
 };
 
 
@@ -132,6 +127,7 @@ Notes.prototype={
                         return false;
                 this.document=this.window.document;
                 this._addContent();
+                this.update();
                 this._startTimer();
                 this.global_onunload=window.onunload;
                 window.onunload=this._onUnload.bind(this);
@@ -150,10 +146,24 @@ Notes.prototype={
         },
 
         update: function() {
-                if (this.window!==null) {
-                        var number = this.presentation.current_slide_index+1,
-                            span = this.document.querySelector("#slides .current");
-                        span.firstChild.textContent=numnber;
+                if (!this.isOpen())
+                        return;
+
+                var number = this.presentation.current_slide_index+1,
+                    span = this.document.querySelector("#slide .current");
+                span.firstChild.textContent=number.toString();
+
+                var slide = this.presentation.slides[this.presentation.current_slide_index],
+                    notes = slide.notes(),
+                    section = this.document.getElementById("notes");
+
+                while (section.hasChildNodes())
+                        section.removeChild(section.firstChild);
+
+                if (notes && notes.childElementCount) {
+                        var children = notes.children;
+                        for (var i=0; i<children.length; i++)
+                                section.appendChild(this.document.importNode(children[i], true));
                 }
         },
 
@@ -163,11 +173,14 @@ Notes.prototype={
 
         _addContent: function() {
                 var body = this.document.body,
-                    container, span;
+                    header, container, span;
+
+                header=this.document.createElement("header");
+                header.className="meta";
 
                 // Create the slide index
                 container=this.document.createElement("div");
-                container.id="slides";
+                container.id="slide";
                 span=this.document.createElement("span");
                 span.className="current";
                 span.appendChild(this.document.createTextNode(this.presentation.current_slide_index+1));
@@ -177,12 +190,18 @@ Notes.prototype={
                 span.className="total";
                 span.appendChild(this.document.createTextNode(this.presentation.slides.length));
                 container.appendChild(span);
-                body.appendChild(container);
+                header.appendChild(container);
 
                 // Create the timer
                 container=this.document.createElement("timer");
                 container.id="timer";
                 container.appendChild(this.document.createTextNode("00:00:00"));
+                header.appendChild(container);
+
+                body.appendChild(header);
+
+                container=this.document.createElement("section");
+                container.id="notes";
                 body.appendChild(container);
         },
 
