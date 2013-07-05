@@ -9,10 +9,15 @@
 
 function onSlideDisplay(event) {
         var slide = event.detail.slide.element,
-            video = slide.querySelector("video");
+            videos = slide.querySelectorAll("video");
 
-        if (video!==null && video.paused && video.currentTime===0)
-                video.play();
+        for (var i=0; i<videos.length; i++) {
+                var video = videos[i];
+                if (video.paused) {
+                        video.currentTime=0;
+                        video.play();
+                }
+        }
 }
 
 
