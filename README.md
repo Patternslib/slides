@@ -3,14 +3,15 @@
 [Patternslib/slides](https://github.com/Patternslib/slides) is a minimal
 slideshows library. It is minimal for several reasons:
 
-* No dependencies on other javascript libraries.
-* No hardcoded styling: everything can be handled through CSS.
+* no dependencies on other javascript libraries
+* no hardcoded styling: everything is handled through CSS
 
 Even with its minimal design a number of interesting features are available:
 
 * navigating between slides using swipe gestures
 * multiple slideshows on a page
 * separate window with timer and presenter notes for the current clise
+* fullscreen mode
 
 # Markup structure
 
