@@ -353,6 +353,47 @@ Presentation.prototype={
                         this.notes_window.show();
         },
 
+        enterFullscreen: function() {
+                var names = ["requestFullScreen", "webkitRequestFullScreen",
+                             "mozRequestFullScreen", "msCancelFullScreen",
+                             "oRequestFullScreen"];
+                for (var i=0; i<names.length; i++)
+                        if (typeof this.container[names[i]]==="function") {
+                                this.container[names[i]](this.container);
+                                break;
+                        }
+        },
+
+        exitFullscreen: function() {
+                var names = ["cancelFullScreen", "webkitCancelFullScreen",
+                             "mozCancelFullScreen", "msCancelFullScreen",
+                             "oCancelFullScreen"];
+                for (var i=0; i<names.length; i++)
+                        if (typeof document[names[i]]==="function") {
+                                document[names[i]]();
+                                break;
+                        }
+        },
+
+        toggleFullscreen: function() {
+                var names = ["fullScreen", "webkitIsFullScreen", "mozFullScreen",
+                             "msFullScreen", "oFullScreen"],
+                    fullScreen;
+
+                for (var i=0; fullScreen===undefined && i<names.length; i++)
+                        fullScreen=document[names[i]];
+                switch (fullScreen) {
+                        case undefined:
+                                return;
+                        case true:
+                                this.exitFullscreen();
+                                break;
+                        case false:
+                                this.enterFullscreen();
+                                break;
+                }
+        },
+
         first: function() {
                 if (!this.running)
                         return;
@@ -468,6 +509,11 @@ Presentation.prototype={
                         case 35: // End
                                 event.preventDefault();
                                 this.last();
+                                break;
+
+                        case 70: // F
+                                event.preventDefault();
+                                this.toggleFullscreen();
                                 break;
 
                         case 78: // N

@@ -62,6 +62,7 @@ and swipe controls are available:
 * `PageDown`, `Down`, `Right` and `Space` keys: go to next slide
 * `Home` key: jump to the first slide
 * `End` key: jump to the last slide
+* `F` key: toggle fullscreen
 * `N` key: toggle presenter notes window
 * Swipe left: go to the previous slide
 * Swipe right: go to the next slide
