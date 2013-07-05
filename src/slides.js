@@ -324,6 +324,8 @@ Presentation.prototype={
                         return;
                 this.running=false;
 
+                if (this._isFullScreen())
+                        this.exitFullscreen();
                 this.events.removeAll();
                 removeClass(this.container, "mode-full");
                 addClass(this.container, "mode-list");
@@ -375,14 +377,18 @@ Presentation.prototype={
                         }
         },
 
-        toggleFullscreen: function() {
+        _isFullScreen: function() {
                 var names = ["fullScreen", "webkitIsFullScreen", "mozFullScreen",
                              "msFullScreen", "oFullScreen"],
                     fullScreen;
 
                 for (var i=0; fullScreen===undefined && i<names.length; i++)
                         fullScreen=document[names[i]];
-                switch (fullScreen) {
+                return fullScreen;
+        },
+
+        toggleFullscreen: function() {
+                switch (this._isFullScreen()) {
                         case undefined:
                                 return;
                         case true:
