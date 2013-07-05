@@ -92,6 +92,22 @@
                     <a href="notes.md" class="pat-inject" data-pat-inject="source: ## Cards::element; target: self::element; trigger: autoload">Notes</a>
                 </footer>
             </div>  
+
+            <div class="slide" id="fifth-slide">
+                <div class="slide-content">
+                    <section>
+                        <h1>Big Buck Bunny</h1>
+                        <video preload="metadata" controls="controls" height="240" poster="video/poster.jpg" width="360">
+                            <source src="video/BigBuck.m4v"/>
+                            <source src="video/BigBuck.theora.ogv" type="video/ogg"/>
+                        </video>
+                    </section>
+                </div>
+                <footer>
+                    <p>This video was made by the <a href="http://www.blender.org/">Blender project</a>.</p>
+                </footer>
+            </div>
+
             <div class="slide">
                 <div class="slide-content">
                     <section>
@@ -135,6 +151,7 @@
         </div>
 
         <script type="text/javascript" src="../src/slides.js"></script>
+        <script type="text/javascript" src="../src/slides-video.js"></script>
         <script type="text/javascript" src="lib/prefixfree.min.js"></script>
         <script type="text/javascript" charset="utf-8">
           var presentations = document.querySelectorAll(".slideshow"),
