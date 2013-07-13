@@ -30,6 +30,13 @@ function removeClass(el, name) {
 }
 
 
+function extend(target, src) {
+        for (var name in src)
+                if  (src.hasOwnProperty(name))
+                        target[name]=src[name];
+}
+
+
 //////////////////////////////////////////////////////////////////////
 function EventTracker() {
         this.listeners=[];
@@ -81,12 +88,12 @@ function Slide(presentation, element, active, number) {
 
 Slide.prototype={
         title: function() {
-                var el = this.element.querySelector(this.presentation.slide_title_selector);
+                var el = this.element.querySelector(this.presentation.config.slide_title_selector);
                 return el!==null ? el.textContent : null;
         },
 
         notes: function() {
-                return this.element.querySelector(this.presentation.slide_notes_selector);
+                return this.element.querySelector(this.presentation.config.slide_notes_selector);
         },
 
         _onClick: function() {
@@ -260,7 +267,23 @@ Notes.prototype={
 
 //////////////////////////////////////////////////////////////////////
 
-function Presentation(container) {
+var default_config = {
+        // Selector to find slides.
+        slide_selector: ".slide",
+
+        // Selector to find the title of a slide *from the slide*.
+        slide_title_selector: "header",
+
+        // Selector to find the presentation notes for a slide *from the slide*.
+        slide_notes_selector: "footer"
+};
+
+
+function Presentation(container, options) {
+        this.config={};
+        extend(this.config, default_config);
+        if (typeof options==="object")
+                extend(this.config, options);
         this.container=container;
         removeClass(this.container, "mode-full");
         addClass(this.container, "mode-list");
@@ -276,15 +299,6 @@ Presentation.prototype={
 
         // Flag if we are currently running in presentation mode.
         running: false,
-
-        // Selector to find slides.
-        slide_selector: ".slide",
-
-        // Selector to find the title of a slide *from the slide*.
-        slide_title_selector: "header",
-
-        // Selector to find the presentation notes for a slide *from the slide*.
-        slide_notes_selector: "footer",
 
         // The currently shown slide.
         current_slide_index: null,
@@ -582,7 +596,7 @@ Presentation.prototype={
         },
 
         scan: function() {
-                var elements = this.container.querySelectorAll(this.slide_selector);
+                var elements = this.container.querySelectorAll(this.config.slide_selector);
                 this.slides=[];
                 this.current_slide_index=0;
                 for (var i=0; i<elements.length; i++) {
