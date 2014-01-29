@@ -1,6 +1,6 @@
 {
         "name": "slides",
-        "version": "0.1.0",
+        "version": "0.1.1",
         "description": "Simple HTML5/CSS slideshows",
         "homepage": "https://github.com/Patternslib/slides",
         "bugs": {
@@ -27,6 +27,6 @@
                 "slideshow",
                 "presentation"
         ],
-        "license": "MIT"
+        "license": "BSD"
 }
 
